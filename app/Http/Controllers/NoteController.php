@@ -9,6 +9,8 @@ use App\Http\Resources\NoteCollection;
 use App\Http\Resources\NoteResource;
 use App\Http\Filters\NoteFilter;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
 
 class NoteController extends Controller
 {
@@ -30,16 +32,6 @@ class NoteController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create(StoreNoteRequest $request)
-    {
-
-    }
-
-    /**
      * Store a newly created resource in storage.
      *
      * @param  \App\Http\Requests\StoreNoteRequest  $request
@@ -47,7 +39,20 @@ class NoteController extends Controller
      */
     public function store(StoreNoteRequest $request)
     {
-        return new NoteResource(Note::create($request->all()));
+        $data = $request->all();
+        $image_64 = $request->get('coverPhoto');
+        if (preg_match('/^data:image\/(\w+);base64,/', $image_64)) {
+            $image_64 = substr($image_64, strpos($image_64, ',') + 1);
+        }
+        $image = base64_decode($image_64);
+        $imgName = Str::random(10).".png";
+        $saved = Storage::disk('public')->put('images/uploads/'.$imgName, $image);
+        if($saved == 1){
+            $data['coverPhoto'] = $imgName;
+            $data['cover_photo'] = $imgName;
+        }
+        $request->merge($data);
+        return new NoteResource(Note::create($data));
     }
 
     /**
@@ -62,17 +67,6 @@ class NoteController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Note  $note
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Note $note)
-    {
-        //
-    }
-
-    /**
      * Update the specified resource in storage.
      *
      * @param  \App\Http\Requests\UpdateNoteRequest  $request
@@ -81,6 +75,20 @@ class NoteController extends Controller
      */
     public function update(UpdateNoteRequest $request, Note $note)
     {
+        $data = $request->all();
+        $image_64 = $request->get('coverPhoto');
+        if (preg_match('/^data:image\/(\w+);base64,/', $image_64)) {
+            $image_64 = substr($image_64, strpos($image_64, ',') + 1);
+        }
+        $image = base64_decode($image_64);
+        $imgName = Str::random(10).".png";
+        $saved = Storage::disk('public')->put($imgName, $image);
+        if($saved == 1){
+            $data['coverPhoto'] = $imgName;
+            $data['cover_photo'] = $imgName;
+        }
+        $request->merge($data);
+        if($note->cover_photo != null) Storage::disk('public')->delete($note->cover_photo);
         $note->update($request->all());
         return new NoteResource($note);
     }
