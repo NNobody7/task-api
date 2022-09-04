@@ -16,8 +16,10 @@ class NoteFactory extends Factory
      */
     public function definition()
     {
+        $bContent = $this->faker->boolean(75);
         return [
-            //
+            'title' => $this->faker->sentence(5),
+            'content' => $bContent ? $this->faker->paragraph() : null
         ];
     }
 }

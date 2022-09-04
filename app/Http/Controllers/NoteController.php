@@ -5,6 +5,10 @@ namespace App\Http\Controllers;
 use App\Models\Note;
 use App\Http\Requests\StoreNoteRequest;
 use App\Http\Requests\UpdateNoteRequest;
+use App\Http\Resources\NoteCollection;
+use App\Http\Resources\NoteResource;
+use App\Http\Filters\NoteFilter;
+use Illuminate\Http\Request;
 
 class NoteController extends Controller
 {
@@ -13,9 +17,16 @@ class NoteController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        $filter = new NoteFilter();
+        $items = $filter->transform($request);
+        if(count($items) == 0){
+            return new NoteCollection(Note::all());
+        }
+        else{
+            return new NoteCollection(Note::where($items)->get());
+        }
     }
 
     /**
@@ -47,7 +58,7 @@ class NoteController extends Controller
      */
     public function show(Note $note)
     {
-        //
+        return new NoteResource($note);
     }
 
     /**
