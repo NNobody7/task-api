@@ -34,9 +34,9 @@ class NoteController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create(StoreNoteRequest $request)
     {
-        //
+
     }
 
     /**
@@ -47,7 +47,7 @@ class NoteController extends Controller
      */
     public function store(StoreNoteRequest $request)
     {
-        //
+        return new NoteResource(Note::create($request->all()));
     }
 
     /**
@@ -92,6 +92,7 @@ class NoteController extends Controller
      */
     public function destroy(Note $note)
     {
-        //
+        $note->delete();
+        return new NoteResource($note);
     }
 }
