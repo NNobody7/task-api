@@ -81,7 +81,8 @@ class NoteController extends Controller
      */
     public function update(UpdateNoteRequest $request, Note $note)
     {
-        //
+        $note->update($request->all());
+        return new NoteResource($note);
     }
 
     /**
