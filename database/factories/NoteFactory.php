@@ -18,7 +18,7 @@ class NoteFactory extends Factory
     {
         $bContent = $this->faker->boolean(75);
         return [
-            'title' => $this->faker->sentence(5),
+            'title' => $this->faker->sentence(1),
             'content' => $bContent ? $this->faker->paragraph() : null
         ];
     }

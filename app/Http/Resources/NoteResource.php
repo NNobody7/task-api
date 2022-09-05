@@ -18,7 +18,8 @@ class NoteResource extends JsonResource
             'id' => $this->id,
             'title' => $this->title,
             'content' => $this->content,
-            'coverPhoto' => $this->cover_photo
+            'coverPhoto' => $this->cover_photo,
+            'userId' => $this->user_id
         ];
     }
 }

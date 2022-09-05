@@ -13,4 +13,8 @@ class Note extends Model
         'content',
         'cover_photo'
     ];
+
+    public function user(){
+        return $this->belongsTo(User::class);
+    }
 }

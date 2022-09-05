@@ -40,18 +40,11 @@ class NoteController extends Controller
     public function store(StoreNoteRequest $request)
     {
         $data = $request->all();
-        $image_64 = $request->get('coverPhoto');
-        if (preg_match('/^data:image\/(\w+);base64,/', $image_64)) {
-            $image_64 = substr($image_64, strpos($image_64, ',') + 1);
+        // save image
+        if(isset($data['coverPhoto']) && $data['coverPhoto'] != null)
+        {
+            $this->saveImage($request);
         }
-        $image = base64_decode($image_64);
-        $imgName = Str::random(10).".png";
-        $saved = Storage::disk('public')->put('images/uploads/'.$imgName, $image);
-        if($saved == 1){
-            $data['coverPhoto'] = $imgName;
-            $data['cover_photo'] = $imgName;
-        }
-        $request->merge($data);
         return new NoteResource(Note::create($data));
     }
 
@@ -76,19 +69,11 @@ class NoteController extends Controller
     public function update(UpdateNoteRequest $request, Note $note)
     {
         $data = $request->all();
-        $image_64 = $request->get('coverPhoto');
-        if (preg_match('/^data:image\/(\w+);base64,/', $image_64)) {
-            $image_64 = substr($image_64, strpos($image_64, ',') + 1);
+        if(isset($data['coverPhoto']) && $data['coverPhoto'] != null)
+        {
+            Storage::disk('public')->delete('images/uploads/'.$note->cover_photo);
+            $this->saveImage($request);
         }
-        $image = base64_decode($image_64);
-        $imgName = Str::random(10).".png";
-        $saved = Storage::disk('public')->put($imgName, $image);
-        if($saved == 1){
-            $data['coverPhoto'] = $imgName;
-            $data['cover_photo'] = $imgName;
-        }
-        $request->merge($data);
-        if($note->cover_photo != null) Storage::disk('public')->delete($note->cover_photo);
         $note->update($request->all());
         return new NoteResource($note);
     }
@@ -103,5 +88,20 @@ class NoteController extends Controller
     {
         $note->delete();
         return new NoteResource($note);
+    }
+
+    private function saveImage(Request $request){
+        $image_64 = $request->get('coverPhoto');
+            if (preg_match('/^data:image\/(\w+);base64,/', $image_64)) {
+                $image_64 = substr($image_64, strpos($image_64, ','));
+            }
+            $image = base64_decode($image_64);
+            $imgName = Str::random(10).".png";
+            $saved = Storage::disk('public')->put('images/uploads/'.$imgName, $image);
+            if($saved == 1){
+                $data['coverPhoto'] = $imgName;
+                $data['cover_photo'] = $imgName;
+            }
+            $request->merge($data);
     }
 }
