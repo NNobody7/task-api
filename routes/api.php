@@ -23,4 +23,6 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 // api/
 Route::group(['namespace' => 'App\Http\Controllers'], function(){
     Route::apiResource('notes', NoteController::class);
+    Route::post('/register', 'AuthController@register');
+    Route::post('/login', 'AuthController@login');
 });
