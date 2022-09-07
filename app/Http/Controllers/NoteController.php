@@ -39,13 +39,12 @@ class NoteController extends Controller
      */
     public function store(StoreNoteRequest $request)
     {
-        $data = $request->all();
         // save image
-        if(isset($data['coverPhoto']) && $data['coverPhoto'] != null)
+        if($request->exists('coverPhoto') && $request->get('coverPhoto') != null)
         {
             $this->saveImage($request);
         }
-        return new NoteResource(Note::create($data));
+        return new NoteResource(Note::create($request->all()));
     }
 
     /**
@@ -68,10 +67,9 @@ class NoteController extends Controller
      */
     public function update(UpdateNoteRequest $request, Note $note)
     {
-        $data = $request->all();
-        if(isset($data['coverPhoto']) && $data['coverPhoto'] != null)
+        if($request->exists('coverPhoto') && $request->get('coverPhoto') != null )
         {
-            Storage::disk('public')->delete('images/uploads/'.$note->cover_photo);
+            if(isset($note->cover_photo)) Storage::disk('public')->delete('images/uploads/'.$note->cover_photo);
             $this->saveImage($request);
         }
         $note->update($request->all());
@@ -86,12 +84,14 @@ class NoteController extends Controller
      */
     public function destroy(Note $note)
     {
+        if(isset($note->cover_photo)) Storage::disk('public')->delete('images/uploads/'.$note->cover_photo);
         $note->delete();
         return new NoteResource($note);
     }
 
     private function saveImage(Request $request){
-        $image_64 = $request->get('coverPhoto');
+            $data = $request->all();
+            $image_64 = $request->get('coverPhoto');
             if (preg_match('/^data:image\/(\w+);base64,/', $image_64)) {
                 $image_64 = substr($image_64, strpos($image_64, ','));
             }
@@ -101,6 +101,9 @@ class NoteController extends Controller
             if($saved == 1){
                 $data['coverPhoto'] = $imgName;
                 $data['cover_photo'] = $imgName;
+            }
+            else{
+                $data['coverPhoto'] == null;
             }
             $request->merge($data);
     }
