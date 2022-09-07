@@ -24,7 +24,8 @@ class NoteController extends Controller
         $filter = new NoteFilter();
         $items = $filter->transform($request);
         if(count($items) == 0){
-            return new NoteCollection(Note::all());
+            return new NoteCollection(auth('sanctum')->user()->notes);
+            //return new NoteCollection(Note::all());
         }
         else{
             return new NoteCollection(Note::where($items)->get());
@@ -39,6 +40,7 @@ class NoteController extends Controller
      */
     public function store(StoreNoteRequest $request)
     {
+        $request->merge(['user_id' => auth('sanctum')->user()->id]);
         // save image
         if($request->exists('coverPhoto') && $request->get('coverPhoto') != null)
         {
@@ -67,6 +69,7 @@ class NoteController extends Controller
      */
     public function update(UpdateNoteRequest $request, Note $note)
     {
+        $request->merge(['user_id' => auth('sanctum')->user()->id]);
         if($request->exists('coverPhoto') && $request->get('coverPhoto') != null )
         {
             if(isset($note->cover_photo)) Storage::disk('public')->delete('images/uploads/'.$note->cover_photo);

@@ -24,8 +24,8 @@ class ApiFilter{
                 $op = $this->operatorMap[$operator];
                 $val = $query[$operator];
                 if(str_contains($op, 'like')){
-                    $tmp = preg_replace('/^\'/', '', $query[$operator]);
-                    $val = preg_replace('/\'$/', '', $tmp);
+                    /*$tmp = preg_replace('/^\'/', '', $query[$operator]);
+                    $val = preg_replace('/\'$/', '', $tmp);*/
                     $val = '%'.addslashes($val).'%';
                 }
                 $forEloquent[] = [$column, $op, $val];

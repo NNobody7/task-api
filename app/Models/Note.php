@@ -11,7 +11,8 @@ class Note extends Model
     protected $fillable = [
         'title',
         'content',
-        'cover_photo'
+        'cover_photo',
+        'user_id'
     ];
 
     public function user(){
