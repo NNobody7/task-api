@@ -6,6 +6,6 @@ class NoteFilter extends ApiFilter{
         'title' => ['li']
     ];
     protected $operatorMap = [
-        'li' => 'like'
+        'li' => 'ilike'
     ];
 }

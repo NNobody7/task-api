@@ -23,7 +23,7 @@ class ApiFilter{
             if(isset($query[$operator])){
                 $op = $this->operatorMap[$operator];
                 $val = $query[$operator];
-                if(strcasecmp($op, 'like') == 0){
+                if(str_contains($op, 'like')){
                     $tmp = preg_replace('/^\'/', '', $query[$operator]);
                     $val = preg_replace('/\'$/', '', $tmp);
                     $val = '%'.addslashes($val).'%';
